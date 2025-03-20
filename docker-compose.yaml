@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: eshopdb
+    volumes:
+      - mysql-data:/var/lib/mysql
+  springboot:
+    build: .
+    container_name: springboot-app
+    depends_on:
+      - mysql
+    ports:
+      - "8080:8080"
+    environment:
+        SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/eshopdb?createDatabaseIfNotExist=true
+        SPRING_DATASOURCE_USERNAME: root
+        SPRING_DATASOURCE_PASSWORD: secret
+        SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+        SPRING_JPA_SHOW_SQL: "true"
+        SPRING_JPA_HIBERNATE_DDL_AUTO: update
+  react:
+    container_name: react-app
+    image: react-image
+    ports:
+      - "90:80"
+
+volumes:
+  mysql-data:
